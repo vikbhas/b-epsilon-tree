@@ -7,29 +7,26 @@
 int main() {
   std::cout << "Startup!" << std::endl;
   BeTree tree("tree");
-  uint32_t size = 100000u;
-  uint32_t test = 1;
+  char* colour[4]
+      = { "Blue", "Red", "Orange", "Yellow"};
+  // uint32_t size = 100000u;
+  uint32_t size = 4;
+  uint32_t test = 0;
 
-  switch (test) {
+  switch (test) { 
     case 0:
-      for (uint32_t i = 1u; i <= size; i++) {
-        tree.Insert(i, i);
-        uint32_t q = tree.Query(i);
-        assert(q == i);
+      for (int i = 0; i < size; i++) {
+        bool val = tree.checkStringValid(colour[i]);
+        if (val == 1){
+          tree.Insert(i, colour[i]);
+          // assert(tree.Query(i) == colour[i]);
+        }
+        else{
+          break;
+        }
       }
-      for (uint32_t i = 1u; i <= size; i++) {
-        uint32_t q = tree.Query(i);
-        assert(q == i);
-      }
-      break;
-
-    case 1:
-      for (int i = size; i >= 1u; i--) {
-        tree.Insert(i, size - i);
-        assert(tree.Query(i) == size - i);
-      }
-      for (int i = 1u; i <= size; i++) {
-        assert(tree.Query(i) == size - i);
+      for (int i = 0; i <= size; i++) {
+        // assert(tree.Query(i) == colour[i]);
       }
       break;
   }

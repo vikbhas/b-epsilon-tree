@@ -30,7 +30,7 @@ enum UpsertFunction : uint32_t { INSERT, DELETE, UPDATE, INVALID };
 struct BeUpsert {
   uint32_t key;
   UpsertFunction type;
-  uint32_t parameter;
+  char* parameter;
   uint32_t timestamp;
 };
 bool SortBeUpsert(BeUpsert const &lhs, BeUpsert const &rhs);
@@ -68,7 +68,7 @@ int SerializeBePivots(Block *disk_store, int pos, struct BePivots *pivots);
 struct BeData {
   uint32_t size;
   uint32_t keys[NUM_DATA_PAIRS];
-  uint32_t values[NUM_DATA_PAIRS];
+  char* values[NUM_DATA_PAIRS];
 };
 
 class BeNode;  // forward declaration
@@ -98,7 +98,7 @@ class BeTree {
 
   /* Adds the specified upsert to the root node, flushing (lazily) if necessary.
    */
-  void Upsert(uint32_t key, UpsertFunction type, uint32_t parameter);
+  void Upsert(uint32_t key, UpsertFunction type, char* parameter);
 
  public:
   BeTree(std::string _name);
@@ -108,13 +108,13 @@ class BeTree {
    *
    * Throws an error if the key is already in the tree.
    */
-  void Insert(uint32_t key, uint32_t val);
+  void Insert(uint32_t key, char* val);
 
   /* Update the [key] with the new [val] in the tree.
    *
    * Throws an error if the key is not already in the tree.
    */
-  void Update(uint32_t key, uint32_t val);
+  void Update(uint32_t key, char* val);
 
   /* Delete the [key] from the tree.
    *
@@ -126,6 +126,7 @@ class BeTree {
    * found.
    */
   uint32_t Query(uint32_t key);
+  bool checkStringValid(char* str);
 };
 
 class BeNode : public Serializable {
@@ -257,7 +258,7 @@ class BeNode : public Serializable {
    * Assumes that the node is an internal node, that there is space in its
    * upsert buffer, and that the key goes under this node.
    */
-  void Upsert(uint32_t key, UpsertFunction type, uint32_t parameter);
+  void Upsert(uint32_t key, UpsertFunction type, char* parameter);
 
   /* Queries for the key in the tree rooted at the node, returns a sentinel
    * value if it is not found.

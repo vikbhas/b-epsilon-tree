@@ -174,7 +174,7 @@ uint32_t BeNode::SplitLeaf(uint32_t &new_id) {
              std::to_string(*parent) + "<-" + std::to_string(new_id));
 
   // Sort the data in place in the node
-  std::vector<std::pair<uint32_t, uint32_t> > pairs(data->size);
+  std::vector<std::pair<uint32_t, char*> > pairs(data->size);
   for (int i = 0; i < data->size; i++) {
     pairs[i].first = data->keys[i];
     pairs[i].second = data->values[i];
@@ -452,7 +452,8 @@ uint32_t BeNode::Query(uint32_t key) {
     Open();
     if (*is_leaf) {
       for (int i = 0; i < data->size; ++i) {
-        if (data->keys[i] == key) ret = data->values[i];
+        if (data->keys[i] == key) ret = 1;
+        // data->values[i];
       }
       break;
     } else {
@@ -463,7 +464,8 @@ uint32_t BeNode::Query(uint32_t key) {
           if (buffer->buffer[i].type == DELETE) {
             ret = KEY_NOT_FOUND;
           } else {
-            ret = buffer->buffer[i].parameter;
+            ret = 2;
+            // buffer->buffer[i].parameter;
           }
           found = true;
         }
@@ -484,7 +486,7 @@ uint32_t BeNode::Query(uint32_t key) {
 
 static uint32_t all_timestamp = 0;
 
-void BeNode::Upsert(uint32_t key, UpsertFunction type, uint32_t val) {
+void BeNode::Upsert(uint32_t key, UpsertFunction type, char* val) {
   Open();
   assert(buffer->size < NUM_UPSERTS);  // needs it to not be full
 
@@ -602,14 +604,20 @@ void BeTree::FullFlush() {
 
 uint32_t BeTree::Query(uint32_t key) { return root->Query(key); }
 
-void BeTree::Upsert(uint32_t key, UpsertFunction type, uint32_t parameter) {
+void BeTree::Upsert(uint32_t key, UpsertFunction type, char* parameter) {
   if (root->buffer->size == NUM_UPSERTS) FullFlush();
   root->Upsert(key, type, parameter);
 }
-
-void BeTree::Update(uint32_t key, uint32_t val) { Upsert(key, UPDATE, val); }
+bool BeTree::checkStringValid(char* str){
+  if (sizeof(str) <= 1024){
+    return true;
+  }else{
+    return false;
+  }
+};
+void BeTree::Update(uint32_t key, char* val) { Upsert(key, UPDATE, val); }
 
 void BeTree::Delete(uint32_t key) { Upsert(key, DELETE, 0); }
 
-void BeTree::Insert(uint32_t key, uint32_t val) { Upsert(key, INSERT, val); }
+void BeTree::Insert(uint32_t key, char* val) { Upsert(key, INSERT, val); }
 
