@@ -125,7 +125,7 @@ class BeTree {
   /* Queries for the key in the tree, returns a sentinel value if it is not
    * found.
    */
-  uint32_t Query(uint32_t key);
+  char* Query(uint32_t key);
   bool checkStringValid(char* str);
 };
 
@@ -263,7 +263,7 @@ class BeNode : public Serializable {
   /* Queries for the key in the tree rooted at the node, returns a sentinel
    * value if it is not found.
    */
-  uint32_t Query(uint32_t key);
+  char* Query(uint32_t key);
 
   /* Serializes the node to the given [pos] in [disk_store].
    *

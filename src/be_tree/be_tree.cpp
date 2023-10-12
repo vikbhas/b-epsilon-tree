@@ -442,9 +442,9 @@ bool BeNode::AddPivot(uint32_t split_key, uint32_t new_id) {
   return pivots->size == NUM_PIVOTS;
 }
 
-uint32_t BeNode::Query(uint32_t key) {
+char* BeNode::Query(uint32_t key) {
   uint32_t orig_id = id;
-  uint32_t ret = KEY_NOT_FOUND;
+  char* ret = "KEY_NOT_FOUND";
 
   uint32_t latest_timestamp = 0;
   bool found = false;
@@ -452,8 +452,7 @@ uint32_t BeNode::Query(uint32_t key) {
     Open();
     if (*is_leaf) {
       for (int i = 0; i < data->size; ++i) {
-        if (data->keys[i] == key) ret = 1;
-        // data->values[i];
+        if (data->keys[i] == key) ret = data->values[i];
       }
       break;
     } else {
@@ -462,10 +461,9 @@ uint32_t BeNode::Query(uint32_t key) {
             buffer->buffer[i].timestamp >= latest_timestamp) {
           latest_timestamp = buffer->buffer[i].timestamp;
           if (buffer->buffer[i].type == DELETE) {
-            ret = KEY_NOT_FOUND;
+            ret = "KEY_NOT_FOUND";
           } else {
-            ret = 2;
-            // buffer->buffer[i].parameter;
+            ret = buffer->buffer[i].parameter;
           }
           found = true;
         }
@@ -480,7 +478,7 @@ uint32_t BeNode::Query(uint32_t key) {
 
   id = orig_id;
 
-  if (ret == KEY_NOT_FOUND) printf("key %u not found!\n", key);
+  if (ret == "KEY_NOT_FOUND") printf("key %u not found!\n", key);
   return ret;
 }
 
@@ -602,7 +600,7 @@ void BeTree::FullFlush() {
   }
 }
 
-uint32_t BeTree::Query(uint32_t key) { return root->Query(key); }
+char* BeTree::Query(uint32_t key) { return root->Query(key); }
 
 void BeTree::Upsert(uint32_t key, UpsertFunction type, char* parameter) {
   if (root->buffer->size == NUM_UPSERTS) FullFlush();

@@ -19,14 +19,14 @@ int main() {
         bool val = tree.checkStringValid(colour[i]);
         if (val == 1){
           tree.Insert(i, colour[i]);
-          // assert(tree.Query(i) == colour[i]);
+          assert(tree.Query(i) == colour[i]);
         }
         else{
           break;
         }
       }
-      for (int i = 0; i <= size; i++) {
-        // assert(tree.Query(i) == colour[i]);
+      for (int i = 0; i < size; i++) {
+        assert(tree.Query(i) == colour[i]);
       }
       break;
   }
